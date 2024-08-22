@@ -1,0 +1,58 @@
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             Int        @id @default(autoincrement())
+  name           String
+  email          String     @unique
+  displayPicture String?
+  role           String
+  password       String
+  products       Product[]
+  comments       Comment[]
+}
+
+model Product {
+  id             Int        @id @default(autoincrement())
+  name           String
+  description    String?
+  price          Float
+  userId         Int
+  user           User       @relation(fields: [userId], references: [id])
+  serialNumber   String     @unique
+  images         Image[]
+  comments       Comment[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Image {
+  id          Int        @id @default(autoincrement())
+  url         String
+  productId   Int
+  product     Product    @relation(fields: [productId], references: [id])
+}
+
+model Comment {
+  id          Int      @id @default(autoincrement())
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  productId   Int
+  userId      Int
+  product     Product @relation(fields: [productId], references: [id])
+  user        User    @relation(fields: [userId], references: [id])
+}
+
+model Coupon {
+  id                   Int      @id @default(autoincrement())
+  code                 String   @unique
+  discountPercentage   Float
+}
