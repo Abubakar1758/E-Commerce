@@ -2,9 +2,11 @@ import React, { useContext, useState } from 'react';
 import { CartContext } from '../contexts/CartContext';
 import CartItem from '../components/CartItem';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../contexts/UserContext';
 
 const CartPage = () => {
   const { cart } = useContext(CartContext);
+  const { user } = useContext(UserContext);
   const [coupon, setCoupon] = useState('');
   const [discount, setDiscount] = useState(0);
   const [couponError, setCouponError] = useState('');
@@ -33,8 +35,12 @@ const CartPage = () => {
   };
 
   const handleCheckout = () => {
-    localStorage.setItem('discountedTotal', getTotalPrice());
-    navigate('/checkout');
+    if (!user) {    
+      navigate('/login');
+    } else {
+      localStorage.setItem('discountedTotal', getTotalPrice());
+      navigate('/checkout');
+    }
   };
 
   return (

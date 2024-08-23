@@ -63,7 +63,7 @@ const CartItem = ({ item }) => {
     <div style={styles.container}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <img
-          src={item.product.images?.[0]?.url ? `http://localhost:4000/${item.product.images[0].url}` : '/assets/default-product.png'}
+          src={item.product.images?.[0]?.url ? item.product.images[0].url : '/assets/default-product.png'}
           alt={item.product.name}
           style={styles.image}
         />

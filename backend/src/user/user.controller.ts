@@ -1,4 +1,15 @@
-import { Controller, Post, Body, UploadedFile, UseInterceptors, ConflictException, UnauthorizedException, Get, Param,ParseIntPipe  } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UploadedFile,
+  UseInterceptors,
+  ConflictException,
+  UnauthorizedException,
+  Get,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { UserService } from './user.service';
@@ -22,7 +33,11 @@ export class UserController {
     }
 
     try {
-      const user = await this.userService.createUser(body, fileBuffer, originalFileName);
+      const user = await this.userService.createUser(
+        body,
+        fileBuffer,
+        originalFileName,
+      );
       return user;
     } catch (error) {
       throw new ConflictException(error.message);
@@ -30,9 +45,7 @@ export class UserController {
   }
 
   @Post('login')
-  async login(
-    @Body() body: { email: string; password: string },
-  ) {
+  async login(@Body() body: { email: string; password: string }) {
     const { email, password } = body;
 
     try {
@@ -43,7 +56,6 @@ export class UserController {
     }
   }
 
-  // New route to get user details by userId
   @Get(':id')
   async getUserById(@Param('id', ParseIntPipe) id: number) {
     try {

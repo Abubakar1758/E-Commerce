@@ -8,7 +8,7 @@ function SignUpPage() {
         firstName: '',
         lastName: '',
         email: '',
-        displayPicture: '',
+        displayPicture: null,
         role: 'buyer',
         password: '',
         confirmPassword: '',
@@ -31,54 +31,52 @@ function SignUpPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+      
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match.');
-            return;
+          setError('Passwords do not match.');
+          return;
         }
-
+      
         const formDataToSend = new FormData();
         formDataToSend.append('firstName', formData.firstName);
         formDataToSend.append('lastName', formData.lastName);
         formDataToSend.append('email', formData.email);
         formDataToSend.append('password', formData.password);
-        formDataToSend.append('displayPicture', formData.displayPicture);
+        formDataToSend.append('displayPicture', formData.displayPicture); // Ensure this is a File object
         formDataToSend.append('role', formData.role);
-
+      
         try {
-            const response = await fetch('http://localhost:4000/user/signup', {
-                method: 'POST',
-                body: formDataToSend,
+          const response = await fetch('http://localhost:4000/user/signup', {
+            method: 'POST',
+            body: formDataToSend,
+          });
+      
+          if (response.ok) {
+            const data = await response.json();
+            setSuccess('Sign-up successful!');
+            setError('');
+      
+            loginUser({
+              name: data.user.name,
+              role: data.user.role,
+              displayPicture: data.user.displayPicture,
+              id: data.user.id,
             });
-
-            if (response.ok) {
-                const data = await response.json();
-                setSuccess('Sign-up successful!');
-                setError('');
-
-                loginUser({
-                    name: data.user.name,
-                    role: data.user.role,
-                    displayPicture: data.user.displayPicture,
-                    id: data.user.id,
-                });
-
-
-                navigate('/');
-
-
-                console.log('Response from server:', data);
-            } else {
-                const errorData = await response.json();
-                setError(`Error: ${errorData.message}`);
-                setSuccess('');
-            }
-        } catch (error) {
-            setError('An error occurred while signing up.');
+      
+            navigate('/');
+            console.log('Response from server:', data);
+          } else {
+            const errorData = await response.json();
+            setError(`Error: ${errorData.message}`);
             setSuccess('');
-            console.error('Error:', error);
+          }
+        } catch (error) {
+          setError('An error occurred while signing up.');
+          setSuccess('');
+          console.error('Error:', error);
         }
-    };
+      };
+      
 
     return (
         <div className="container mt-5">

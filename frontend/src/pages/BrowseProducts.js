@@ -5,12 +5,12 @@ import ProductCard from '../components/ProductCard';
 const BrowseProductsPage = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 12;
+  const productsPerPage = 4;
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:4000/product/get-all-products');
+        const response = await fetch('http://localhost:4000/product');
         const data = await response.json();
 
         if (response.ok) {
@@ -62,7 +62,7 @@ const BrowseProductsPage = () => {
                     id: product.id,
                     name: product.name,
                     description: product.description,
-                    images: product.images.length > 0 ? [`http://localhost:4000/${product.images[0].url}`] : ['/assets/default-product.png'],
+                    images: product.images.length > 0 ? [product.images[0].url] : ['/assets/default-product.png'],
                     price: product.price,
                   }}
                 />

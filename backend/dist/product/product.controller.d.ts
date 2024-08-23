@@ -7,24 +7,20 @@ export declare class ProductController {
     createProduct(createProductDto: CreateProductDto, files: {
         images?: Express.Multer.File[];
     }): Promise<{
-        success: boolean;
-        message: string;
-        product: {
-            images: {
-                id: number;
-                url: string;
-                productId: number;
-            }[];
-        } & {
+        images: {
             id: number;
-            name: string;
-            description: string | null;
-            price: number;
-            userId: number;
-            serialNumber: string;
-            createdAt: Date;
-            updatedAt: Date;
-        };
+            url: string;
+            productId: number;
+        }[];
+    } & {
+        id: number;
+        name: string;
+        description: string | null;
+        price: number;
+        userId: number;
+        serialNumber: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     getAllProducts(): Promise<({
         images: {
@@ -59,11 +55,6 @@ export declare class ProductController {
         updatedAt: Date;
     })[]>;
     getProductById(id: string): Promise<{
-        images: {
-            id: number;
-            url: string;
-            productId: number;
-        }[];
         comments: {
             id: number;
             content: string;
@@ -71,6 +62,11 @@ export declare class ProductController {
             updatedAt: Date;
             productId: number;
             userId: number;
+        }[];
+        images: {
+            id: number;
+            url: string;
+            productId: number;
         }[];
     } & {
         id: number;
@@ -82,34 +78,7 @@ export declare class ProductController {
         createdAt: Date;
         updatedAt: Date;
     }>;
-    addComment(id: string, createCommentDto: CreateCommentDto): Promise<{
-        id: number;
-        content: string;
-        createdAt: Date;
-        updatedAt: Date;
-        productId: number;
-        userId: number;
-    }>;
-    updateComment(productId: string, commentId: string, content: string): Promise<{
-        id: number;
-        content: string;
-        createdAt: Date;
-        updatedAt: Date;
-        productId: number;
-        userId: number;
-    }>;
-    deleteComment(productId: string, commentId: string): Promise<{
-        message: string;
-    }>;
-    getCommentCount(id: string): Promise<{
-        count: number;
-    }>;
-    getProductsByUserId(userId: string): Promise<({
-        images: {
-            id: number;
-            url: string;
-            productId: number;
-        }[];
+    getProductsByUser(userId: string): Promise<({
         comments: {
             id: number;
             content: string;
@@ -117,6 +86,11 @@ export declare class ProductController {
             updatedAt: Date;
             productId: number;
             userId: number;
+        }[];
+        images: {
+            id: number;
+            url: string;
+            productId: number;
         }[];
     } & {
         id: number;
@@ -128,29 +102,49 @@ export declare class ProductController {
         createdAt: Date;
         updatedAt: Date;
     })[]>;
+    getCommentCountByProductId(id: string): Promise<{
+        count: number;
+    }>;
+    addComment(id: string, createCommentDto: CreateCommentDto): Promise<{
+        id: number;
+        content: string;
+        createdAt: Date;
+        updatedAt: Date;
+        productId: number;
+        userId: number;
+    }>;
+    updateComment(productId: string, commentId: string, updateCommentDto: {
+        content: string;
+    }): Promise<{
+        id: number;
+        content: string;
+        createdAt: Date;
+        updatedAt: Date;
+        productId: number;
+        userId: number;
+    }>;
+    deleteComment(productId: string, commentId: string): Promise<{
+        message: string;
+    }>;
     updateProduct(id: string, updateProductDto: CreateProductDto, files: {
         images?: Express.Multer.File[];
     }): Promise<{
-        success: boolean;
-        message: string;
-        product: {
-            images: {
-                id: number;
-                url: string;
-                productId: number;
-            }[];
-        } & {
+        images: {
             id: number;
-            name: string;
-            description: string | null;
-            price: number;
-            userId: number;
-            serialNumber: string;
-            createdAt: Date;
-            updatedAt: Date;
-        };
+            url: string;
+            productId: number;
+        }[];
+    } & {
+        id: number;
+        name: string;
+        description: string | null;
+        price: number;
+        userId: number;
+        serialNumber: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
-    deleteProduct(productId: string): Promise<{
+    deleteProduct(id: string): Promise<{
         message: string;
     }>;
 }

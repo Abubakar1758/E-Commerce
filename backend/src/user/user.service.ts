@@ -1,15 +1,28 @@
-import { Injectable, ConflictException, InternalServerErrorException, UnauthorizedException, NotFoundException } from '@nestjs/common'; // Add NotFoundException
+import {
+  Injectable,
+  ConflictException,
+  InternalServerErrorException,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
+import { SupabaseService } from '../supabase/supabase.service';
 import * as path from 'path';
-import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly supabaseService: SupabaseService,
+  ) {}
 
-  async createUser(data: any, fileBuffer: Buffer | null, originalFileName: string | null) {
+  async createUser(
+    data: any,
+    fileBuffer: Buffer | null,
+    originalFileName: string | null,
+  ) {
     const { firstName, lastName, email, password, role, ...userData } = data;
 
     const existingUser = await this.prisma.user.findUnique({
@@ -22,17 +35,21 @@ export class UserService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    let picturePath: string | null = null;
+    let pictureUrl: string | null = null;
 
     if (fileBuffer && originalFileName) {
       const uniqueFileName = `${uuidv4()}${path.extname(originalFileName)}`;
-      const finalFilePath = path.join(__dirname, '..', '..', 'uploads','user', uniqueFileName);
+      const bucket = process.env.SUPABASE_USER_BUCKET;
 
       try {
-        fs.writeFileSync(finalFilePath, fileBuffer);
-        picturePath = `/uploads/user/${uniqueFileName}`;
+        await this.supabaseService.uploadImage(
+          { buffer: fileBuffer, originalname: originalFileName },
+          uniqueFileName,
+          bucket,
+        );
+        pictureUrl = await this.supabaseService.getImageUrl(uniqueFileName, bucket);
       } catch (error) {
-        throw new InternalServerErrorException('Failed to save display picture.');
+        throw new InternalServerErrorException('Failed to upload display picture.');
       }
     }
 
@@ -44,7 +61,7 @@ export class UserService {
           email,
           password: hashedPassword,
           role,
-          displayPicture: picturePath,
+          displayPicture: pictureUrl,
         },
       });
 
@@ -59,12 +76,6 @@ export class UserService {
         },
       };
     } catch (error) {
-      if (picturePath) {
-        const finalFilePath = path.join(__dirname, '..', '..', 'uploads', originalFileName);
-        if (fs.existsSync(finalFilePath)) {
-          fs.unlinkSync(finalFilePath); // Clean up the file if user creation fails
-        }
-      }
       throw new InternalServerErrorException('An error occurred while creating the user.');
     }
   }
@@ -95,7 +106,6 @@ export class UserService {
     };
   }
 
-  // New method to fetch user details by userId
   async getUserById(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },

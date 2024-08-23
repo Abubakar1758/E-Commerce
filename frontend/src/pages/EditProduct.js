@@ -153,7 +153,7 @@ function EditProductPage() {
                             {product.images.map((img, index) => (
                                 <div key={index} className="mr-2 mb-2">
                                     <img
-                                        src={`http://localhost:4000/${img.url}`}
+                                        src={img.url}
                                         alt="Product"
                                         className="img-thumbnail"
                                         style={{ width: '120px', height: '120px', objectFit: 'cover' }}

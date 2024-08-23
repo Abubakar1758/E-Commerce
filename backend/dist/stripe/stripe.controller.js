@@ -19,22 +19,26 @@ let StripeController = class StripeController {
     constructor(stripeService) {
         this.stripeService = stripeService;
     }
-    async createPaymentIntent(body) {
-        const { amount } = body;
-        const paymentIntent = await this.stripeService.createPaymentIntent(amount);
-        return { clientSecret: paymentIntent.client_secret };
+    async createPaymentIntent(amount) {
+        try {
+            const paymentIntent = await this.stripeService.createPaymentIntent(amount);
+            return { clientSecret: paymentIntent.client_secret };
+        }
+        catch (error) {
+            throw new common_1.HttpException('Failed to create payment intent', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 };
 exports.StripeController = StripeController;
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Post)('create-payment-intent'),
+    __param(0, (0, common_1.Body)('amount')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], StripeController.prototype, "createPaymentIntent", null);
 exports.StripeController = StripeController = __decorate([
-    (0, common_1.Controller)('create-payment-intent'),
+    (0, common_1.Controller)('payment'),
     __metadata("design:paramtypes", [stripe_service_1.StripeService])
 ], StripeController);
 //# sourceMappingURL=stripe.controller.js.map

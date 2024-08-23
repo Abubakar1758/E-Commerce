@@ -19,7 +19,7 @@ function SearchResult({ products, onProductClick }) {
                         onClick={() => handleProductClick(product.id)}
                     >
                         <img
-                            src={product.images?.[0]?.url ? `http://localhost:4000/${product.images[0].url}` : '/assets/default-product.png'}
+                            src={product.images?.[0]?.url ? product.images[0].url : '/assets/default-product.png'}
                             alt={product.name}
                             className="me-2"
                             style={{ width: '50px', height: '50px', objectFit: 'cover' }}

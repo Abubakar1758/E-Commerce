@@ -135,7 +135,7 @@ const ProductDetailPage = () => {
   const commentsToShow = showAllComments ? comments : comments.slice(0, 3);
 
   const imageSrc = product.images.length > 0
-    ? `http://localhost:4000/${product.images[currentImage].url}`
+    ? product.images[currentImage].url
     : '/assets/default-product.png';
 
   return (
@@ -160,7 +160,7 @@ const ProductDetailPage = () => {
               {product.images.map((image, index) => (
                 <img
                   key={index}
-                  src={`http://localhost:4000/${image.url}`}
+                  src={image.url}
                   alt={`Thumbnail ${index + 1}`}
                   className={`img-thumbnail ${index === currentImage ? 'active' : ''}`}
                   style={{

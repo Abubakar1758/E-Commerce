@@ -13,12 +13,13 @@ exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const bcrypt = require("bcryptjs");
+const supabase_service_1 = require("../supabase/supabase.service");
 const path = require("path");
-const fs = require("fs");
 const uuid_1 = require("uuid");
 let UserService = class UserService {
-    constructor(prisma) {
+    constructor(prisma, supabaseService) {
         this.prisma = prisma;
+        this.supabaseService = supabaseService;
     }
     async createUser(data, fileBuffer, originalFileName) {
         const { firstName, lastName, email, password, role, ...userData } = data;
@@ -29,16 +30,16 @@ let UserService = class UserService {
             throw new common_1.ConflictException('Email is already registered.');
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        let picturePath = null;
+        let pictureUrl = null;
         if (fileBuffer && originalFileName) {
             const uniqueFileName = `${(0, uuid_1.v4)()}${path.extname(originalFileName)}`;
-            const finalFilePath = path.join(__dirname, '..', '..', 'uploads', 'user', uniqueFileName);
+            const bucket = process.env.SUPABASE_USER_BUCKET;
             try {
-                fs.writeFileSync(finalFilePath, fileBuffer);
-                picturePath = `/uploads/user/${uniqueFileName}`;
+                await this.supabaseService.uploadImage({ buffer: fileBuffer, originalname: originalFileName }, uniqueFileName, bucket);
+                pictureUrl = await this.supabaseService.getImageUrl(uniqueFileName, bucket);
             }
             catch (error) {
-                throw new common_1.InternalServerErrorException('Failed to save display picture.');
+                throw new common_1.InternalServerErrorException('Failed to upload display picture.');
             }
         }
         try {
@@ -49,7 +50,7 @@ let UserService = class UserService {
                     email,
                     password: hashedPassword,
                     role,
-                    displayPicture: picturePath,
+                    displayPicture: pictureUrl,
                 },
             });
             return {
@@ -64,12 +65,6 @@ let UserService = class UserService {
             };
         }
         catch (error) {
-            if (picturePath) {
-                const finalFilePath = path.join(__dirname, '..', '..', 'uploads', originalFileName);
-                if (fs.existsSync(finalFilePath)) {
-                    fs.unlinkSync(finalFilePath);
-                }
-            }
             throw new common_1.InternalServerErrorException('An error occurred while creating the user.');
         }
     }
@@ -115,6 +110,7 @@ let UserService = class UserService {
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        supabase_service_1.SupabaseService])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

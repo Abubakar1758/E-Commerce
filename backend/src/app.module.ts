@@ -1,25 +1,21 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProductModule } from './product/product.module';
 import { CouponModule } from './coupon/coupon.module';
 import { StripeModule } from './stripe/stripe.module';
+import { SupabaseModule } from './supabase/supabase.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/uploads',
-    }),
     UserModule,
     PrismaModule,
     ProductModule,
     CouponModule,
     StripeModule,
+    SupabaseModule,
   ],
 })
 export class AppModule { }

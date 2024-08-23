@@ -45,7 +45,7 @@ const Comment = ({ comment, onDelete, onEdit }) => {
   return (
     <li className="media mb-3" style={{ borderBottom: '1px solid #ddd', paddingBottom: '10px', position: 'relative' }}>
       <img
-        src={userInfo?.displayPicture ? `http://localhost:4000${userInfo.displayPicture}` : '/assets/default-avatar.png'}
+        src={userInfo?.displayPicture ? userInfo.displayPicture : '/assets/default-avatar.png'}
         alt={userInfo?.name || 'User Avatar'}
         className="mr-3 rounded-circle"
         style={{

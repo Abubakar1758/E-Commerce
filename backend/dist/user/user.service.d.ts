@@ -1,7 +1,9 @@
 import { PrismaService } from '../prisma/prisma.service';
+import { SupabaseService } from '../supabase/supabase.service';
 export declare class UserService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly supabaseService;
+    constructor(prisma: PrismaService, supabaseService: SupabaseService);
     createUser(data: any, fileBuffer: Buffer | null, originalFileName: string | null): Promise<{
         message: string;
         user: {
@@ -23,10 +25,10 @@ export declare class UserService {
         };
     }>;
     getUserById(userId: number): Promise<{
+        email: string;
+        role: string;
         id: number;
         name: string;
-        email: string;
         displayPicture: string;
-        role: string;
     }>;
 }

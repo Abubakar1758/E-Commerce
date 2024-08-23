@@ -12,15 +12,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
-const promises_1 = require("fs/promises");
-const path_1 = require("path");
+const supabase_service_1 = require("../supabase/supabase.service");
 let ProductService = class ProductService {
-    constructor(prisma) {
+    constructor(prisma, supabaseService) {
         this.prisma = prisma;
+        this.supabaseService = supabaseService;
     }
-    async createProduct(createProductDto, imagePaths) {
+    async createProduct(createProductDto, imageFiles) {
         const { name, description, price, serialNumber, userId } = createProductDto;
         try {
+            const imagePaths = await Promise.all(imageFiles.map(async (file) => {
+                const path = file.originalname;
+                await this.supabaseService.uploadImage(file, path, 'product-images');
+                const imageUrl = await this.supabaseService.getImageUrl(path, 'product-images');
+                return { url: imageUrl };
+            }));
             return await this.prisma.product.create({
                 data: {
                     name,
@@ -29,7 +35,7 @@ let ProductService = class ProductService {
                     serialNumber,
                     userId: parseInt(userId.toString()),
                     images: {
-                        create: imagePaths.map((path) => ({ url: path })),
+                        create: imagePaths,
                     },
                 },
                 include: {
@@ -48,6 +54,9 @@ let ProductService = class ProductService {
         });
     }
     async getLatestProducts(limit) {
+        if (isNaN(limit) || limit <= 0) {
+            throw new common_1.BadRequestException('Invalid limit value.');
+        }
         return this.prisma.product.findMany({
             orderBy: { createdAt: 'desc' },
             take: limit,
@@ -107,7 +116,7 @@ let ProductService = class ProductService {
             include: { images: true, comments: true },
         });
     }
-    async updateProduct(id, updateProductDto, imagePaths) {
+    async updateProduct(id, updateProductDto, imageFiles) {
         const { name, description, price } = updateProductDto;
         const existingProduct = await this.prisma.product.findUnique({
             where: { id },
@@ -117,14 +126,24 @@ let ProductService = class ProductService {
             throw new common_1.NotFoundException('Product not found');
         }
         try {
-            if (imagePaths.length > 0) {
-                const oldImagePaths = existingProduct.images.map((image) => image.url);
-                await Promise.all(oldImagePaths.map(async (path) => {
+            const newImagePaths = imageFiles.length > 0
+                ? await Promise.all(imageFiles.map(async (file) => {
+                    const path = file.originalname;
+                    await this.supabaseService.uploadImage(file, path, 'product-images');
+                    const imageUrl = await this.supabaseService.getImageUrl(path, 'product-images');
+                    return { url: imageUrl };
+                }))
+                : [];
+            if (existingProduct.images.length > 0) {
+                await Promise.all(existingProduct.images.map(async (image) => {
                     try {
-                        await (0, promises_1.unlink)((0, path_1.join)(__dirname, '..', '..', path));
+                        const imagePath = image.url.split('/').pop();
+                        if (imagePath) {
+                            await this.supabaseService.deleteImage(imagePath, 'product-images');
+                        }
                     }
                     catch (error) {
-                        console.error(`Failed to delete image ${path}`, error);
+                        console.error(`Failed to delete image ${image.url}`, error);
                     }
                 }));
                 await this.prisma.image.deleteMany({
@@ -138,7 +157,7 @@ let ProductService = class ProductService {
                     description,
                     price: parseFloat(price.toString()),
                     images: {
-                        create: imagePaths.map((path) => ({ url: path })),
+                        create: newImagePaths,
                     },
                 },
                 include: { images: true },
@@ -148,9 +167,9 @@ let ProductService = class ProductService {
             throw new common_1.BadRequestException('Failed to update product. Please try again.');
         }
     }
-    async deleteProduct(productId) {
+    async deleteProduct(id) {
         const product = await this.prisma.product.findUnique({
-            where: { id: productId },
+            where: { id },
             include: { images: true, comments: true },
         });
         if (!product) {
@@ -158,23 +177,21 @@ let ProductService = class ProductService {
         }
         try {
             await Promise.all(product.images.map(async (image) => {
-                try {
-                    await (0, promises_1.unlink)((0, path_1.join)(__dirname, '..', '..', image.url));
-                }
-                catch (error) {
-                    console.error(`Failed to delete image ${image.url}`, error);
+                const imagePath = image.url.split('/').pop();
+                if (imagePath) {
+                    await this.supabaseService.deleteImage(imagePath, 'product-images');
                 }
             }));
             await this.prisma.comment.deleteMany({
-                where: { productId },
+                where: { productId: id },
             });
             await this.prisma.image.deleteMany({
-                where: { productId },
+                where: { productId: id },
             });
             await this.prisma.product.delete({
-                where: { id: productId },
+                where: { id },
             });
-            return { message: 'Product deleted successfully' };
+            return { message: 'Product and all associated data deleted successfully' };
         }
         catch (error) {
             throw new common_1.BadRequestException('Failed to delete product. Please try again.');
@@ -184,6 +201,7 @@ let ProductService = class ProductService {
 exports.ProductService = ProductService;
 exports.ProductService = ProductService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        supabase_service_1.SupabaseService])
 ], ProductService);
 //# sourceMappingURL=product.service.js.map

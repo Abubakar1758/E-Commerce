@@ -13,7 +13,7 @@ export const ProductProvider = ({ children }) => {
 
     const fetchProducts = async () => {
         try {
-            const response = await axios.get('http://localhost:4000/product/get-all-products');
+            const response = await axios.get('http://localhost:4000/product');
             setProducts(response.data);
         } catch (error) {
             console.error('Failed to fetch products:', error);

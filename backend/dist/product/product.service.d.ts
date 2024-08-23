@@ -1,9 +1,11 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
+import { SupabaseService } from 'src/supabase/supabase.service';
 export declare class ProductService {
     private prisma;
-    constructor(prisma: PrismaService);
-    createProduct(createProductDto: CreateProductDto, imagePaths: string[]): Promise<{
+    private supabaseService;
+    constructor(prisma: PrismaService, supabaseService: SupabaseService);
+    createProduct(createProductDto: CreateProductDto, imageFiles: Express.Multer.File[]): Promise<{
         images: {
             id: number;
             url: string;
@@ -52,11 +54,6 @@ export declare class ProductService {
         updatedAt: Date;
     })[]>;
     getProductById(id: number): Promise<{
-        images: {
-            id: number;
-            url: string;
-            productId: number;
-        }[];
         comments: {
             id: number;
             content: string;
@@ -64,6 +61,11 @@ export declare class ProductService {
             updatedAt: Date;
             productId: number;
             userId: number;
+        }[];
+        images: {
+            id: number;
+            url: string;
+            productId: number;
         }[];
     } & {
         id: number;
@@ -96,11 +98,6 @@ export declare class ProductService {
     }>;
     getCommentCountByProductId(productId: number): Promise<number>;
     getProductsByUserId(userId: number): Promise<({
-        images: {
-            id: number;
-            url: string;
-            productId: number;
-        }[];
         comments: {
             id: number;
             content: string;
@@ -108,6 +105,11 @@ export declare class ProductService {
             updatedAt: Date;
             productId: number;
             userId: number;
+        }[];
+        images: {
+            id: number;
+            url: string;
+            productId: number;
         }[];
     } & {
         id: number;
@@ -119,7 +121,7 @@ export declare class ProductService {
         createdAt: Date;
         updatedAt: Date;
     })[]>;
-    updateProduct(id: number, updateProductDto: CreateProductDto, imagePaths: string[]): Promise<{
+    updateProduct(id: number, updateProductDto: CreateProductDto, imageFiles: Express.Multer.File[]): Promise<{
         images: {
             id: number;
             url: string;
@@ -135,7 +137,7 @@ export declare class ProductService {
         createdAt: Date;
         updatedAt: Date;
     }>;
-    deleteProduct(productId: number): Promise<{
+    deleteProduct(id: number): Promise<{
         message: string;
     }>;
 }

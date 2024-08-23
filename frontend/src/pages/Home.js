@@ -8,7 +8,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:4000/product/latest?limit=10');
+        const response = await fetch('http://localhost:4000/product/latest?limit=4');
         const data = await response.json();
 
         if (response.ok) {
@@ -42,7 +42,7 @@ const HomePage = () => {
                     id: product.id,
                     name: product.name,
                     description: product.description,
-                    images: product.images.map(img => `http://localhost:4000/${img.url}`),
+                    images: product.images.map(img => img.url),
                     price: product.price,
                   }}
                 />

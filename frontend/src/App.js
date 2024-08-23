@@ -5,24 +5,23 @@ import LoginPage from './pages/LogIn';
 import HomePage from './pages/Home';
 import CreateProductPage from './pages/CreateProduct';
 import Navbar from './components/Navbar';
-import { useContext } from 'react';
-import { UserContext } from './contexts/UserContext';
 import ProductDetailPage from './pages/ProductDetail';
 import YourProductPage from './pages/YourProduct';
 import EditProductPage from './pages/EditProduct';
 import CartPage from './pages/Cart';
 import BrowseProductsPage from './pages/BrowseProducts';
 import CheckoutPage from './pages/CheckOut';
+import ConfirmationPage from './pages/Confirmation';
 
 
 function App() {
-  const { user } = useContext(UserContext);
+
   return (
     <>
       <Router>
-        {user &&
+   
           <Navbar />
-        }
+        
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/signup" element={<SignUpPage />} />
@@ -34,6 +33,7 @@ function App() {
           <Route path="/your-products" element={<YourProductPage/>} />
           <Route path="/cart" element={<CartPage/>} />
           <Route path="/checkout" element={<CheckoutPage/>} />
+          <Route path="/confirmation" element={<ConfirmationPage/>} />
         </Routes>
       </Router>
     </>

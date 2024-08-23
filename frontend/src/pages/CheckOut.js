@@ -2,20 +2,21 @@ import React, { useState, useContext } from 'react';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { CartContext } from '../contexts/CartContext';
+import { useNavigate } from 'react-router-dom';
 
-// Load your publishable key from Stripe
-const stripePromise = loadStripe('your-publishable-key-here');
+const stripePromise = loadStripe('pk_test_51Pqx2N05ECef6IIAtDWJ2fHFQoUHgaQU66spXlTp03jWNbzKmhaMVcx3WpJKfdO1s30wVrzephEZf0EGBMzn8jy900HYBnDDPJ');
 
 const CheckoutForm = () => {
-  const { cart } = useContext(CartContext);
+  const { cart, clearCart } = useContext(CartContext); 
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const getDiscountedAmount = () => {
     const discountedTotal = localStorage.getItem('discountedTotal');
-    return discountedTotal ? parseFloat(discountedTotal) * 100 : 0; // Amount in cents
+    return discountedTotal ? parseFloat(discountedTotal) * 100 : 0;
   };
 
   const handleSubmit = async (event) => {
@@ -25,12 +26,14 @@ const CheckoutForm = () => {
     setLoading(true);
 
     try {
-      const { data: clientSecret } = await fetch('http://localhost:4000/create-payment-intent', {
+
+      const { clientSecret } = await fetch('http://localhost:4000/payment/create-payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: getDiscountedAmount() }),
       }).then(res => res.json());
 
+     
       const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: elements.getElement(CardElement),
@@ -41,8 +44,9 @@ const CheckoutForm = () => {
         setError(stripeError.message);
       } else if (paymentIntent.status === 'succeeded') {
         alert('Payment successful!');
-        localStorage.removeItem('discountedTotal'); // Optionally clear local storage
-        // Optionally, clear cart or redirect to a confirmation page
+        clearCart(); 
+        localStorage.removeItem('discountedTotal'); 
+        navigate('/confirmation');
       }
     } catch (err) {
       setError('Payment failed.');

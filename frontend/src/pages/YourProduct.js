@@ -43,7 +43,7 @@ const YourProductPage = () => {
                                     id: product.id,
                                     name: product.name,
                                     description: product.description,
-                                    images: product.images.map(img => `http://localhost:4000/${img.url}`),
+                                    images: product.images.map(img => img.url),
                                     price: product.price,
                                 }}
                                 canEdit={true}

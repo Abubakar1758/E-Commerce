@@ -36,7 +36,7 @@ function Navbar() {
     };
 
     const profileImage = user?.displayPicture
-        ? `http://localhost:4000${user.displayPicture}`
+        ? user.displayPicture
         : '/assets/default-avatar.png';
 
     const handleCartClick = () => {

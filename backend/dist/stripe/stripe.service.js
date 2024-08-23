@@ -14,13 +14,13 @@ const common_1 = require("@nestjs/common");
 const stripe_1 = require("stripe");
 let StripeService = class StripeService {
     constructor() {
-        this.stripe = new stripe_1.default('your-secret-key-here', {
+        this.stripe = new stripe_1.default('sk_test_51Pqx2N05ECef6IIAEt1RjLTru7UYt8ycVoykQepOshcGNubwidWBIOdCxoNAeFh90KsmH8SQEINQdTOoi5KbyOhP00FJKiHmfX', {
             apiVersion: '2024-06-20',
         });
     }
     async createPaymentIntent(amount) {
         return this.stripe.paymentIntents.create({
-            amount,
+            amount: amount,
             currency: 'usd',
             payment_method_types: ['card'],
         });
