@@ -6,6 +6,8 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProductModule } from './product/product.module';
 import { CouponModule } from './coupon/coupon.module';
+import { StripeModule } from './stripe/stripe.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -16,7 +18,8 @@ import { CouponModule } from './coupon/coupon.module';
     UserModule,
     PrismaModule,
     ProductModule,
-    CouponModule
+    CouponModule,
+    StripeModule,
   ],
 })
 export class AppModule { }

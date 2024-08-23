@@ -217,15 +217,19 @@ const ProductDetailPage = () => {
           <h3 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#28a745', marginBottom: '20px' }}>${product.price}</h3>
           <div>
             <h4>Comments</h4>
-            {commentsToShow.map((comment) => (
-              <Comment
-                key={comment.id}
-                comment={comment}
-                onDelete={handleDeleteComment}
-                onEdit={handleEditComment}
-                isOwner={comment.userId === userId}
-              />
-            ))}
+            {comments.length === 0 ? (
+              <p>No comments yet</p>
+            ) : (
+              commentsToShow.map((comment) => (
+                <Comment
+                  key={comment.id}
+                  comment={comment}
+                  onDelete={handleDeleteComment}
+                  onEdit={handleEditComment}
+                  isOwner={comment.userId === userId}
+                />
+              ))
+            )}
             {comments.length > 3 && (
               <button onClick={toggleShowAllComments} className="btn btn-link">
                 {showAllComments ? 'Show Less' : 'Read More Comments'}
@@ -239,9 +243,13 @@ const ProductDetailPage = () => {
                 onChange={handleCommentChange}
                 placeholder="Add a comment"
                 className="form-control"
-                style={{ marginBottom: '10px', resize: 'none', height: '100px' }}
+                style={{ marginBottom: '10px', resize: 'none', height: '100px', borderRadius: '5px' }}
               />
-              <button type="submit" className="btn btn-primary">
+              <button
+                type="submit"
+                className="btn btn-primary"
+                style={{ width: '100%' }}
+              >
                 Add Comment
               </button>
             </form>

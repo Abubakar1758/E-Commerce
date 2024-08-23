@@ -52,6 +52,11 @@ export declare class ProductService {
         updatedAt: Date;
     })[]>;
     getProductById(id: number): Promise<{
+        images: {
+            id: number;
+            url: string;
+            productId: number;
+        }[];
         comments: {
             id: number;
             content: string;
@@ -59,11 +64,6 @@ export declare class ProductService {
             updatedAt: Date;
             productId: number;
             userId: number;
-        }[];
-        images: {
-            id: number;
-            url: string;
-            productId: number;
         }[];
     } & {
         id: number;
@@ -96,6 +96,11 @@ export declare class ProductService {
     }>;
     getCommentCountByProductId(productId: number): Promise<number>;
     getProductsByUserId(userId: number): Promise<({
+        images: {
+            id: number;
+            url: string;
+            productId: number;
+        }[];
         comments: {
             id: number;
             content: string;
@@ -103,11 +108,6 @@ export declare class ProductService {
             updatedAt: Date;
             productId: number;
             userId: number;
-        }[];
-        images: {
-            id: number;
-            url: string;
-            productId: number;
         }[];
     } & {
         id: number;

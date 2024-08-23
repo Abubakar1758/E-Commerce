@@ -59,6 +59,11 @@ export declare class ProductController {
         updatedAt: Date;
     })[]>;
     getProductById(id: string): Promise<{
+        images: {
+            id: number;
+            url: string;
+            productId: number;
+        }[];
         comments: {
             id: number;
             content: string;
@@ -66,11 +71,6 @@ export declare class ProductController {
             updatedAt: Date;
             productId: number;
             userId: number;
-        }[];
-        images: {
-            id: number;
-            url: string;
-            productId: number;
         }[];
     } & {
         id: number;
@@ -105,6 +105,11 @@ export declare class ProductController {
         count: number;
     }>;
     getProductsByUserId(userId: string): Promise<({
+        images: {
+            id: number;
+            url: string;
+            productId: number;
+        }[];
         comments: {
             id: number;
             content: string;
@@ -112,11 +117,6 @@ export declare class ProductController {
             updatedAt: Date;
             productId: number;
             userId: number;
-        }[];
-        images: {
-            id: number;
-            url: string;
-            productId: number;
         }[];
     } & {
         id: number;

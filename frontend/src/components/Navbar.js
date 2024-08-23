@@ -158,14 +158,6 @@ function Navbar() {
                             <>
                                 <li className="nav-item mx-2">
                                     <button
-                                        className={`btn btn-link nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}
-                                        onClick={() => navigate('/dashboard')}
-                                    >
-                                        Dashboard
-                                    </button>
-                                </li>
-                                <li className="nav-item mx-2">
-                                    <button
                                         className={`btn btn-link nav-link ${location.pathname === '/your-products' ? 'active' : ''}`}
                                         onClick={() => navigate('/your-products')}
                                     >
