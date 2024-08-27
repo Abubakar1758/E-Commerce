@@ -15,6 +15,7 @@ const product_module_1 = require("./product/product.module");
 const coupon_module_1 = require("./coupon/coupon.module");
 const stripe_module_1 = require("./stripe/stripe.module");
 const supabase_module_1 = require("./supabase/supabase.module");
+const order_module_1 = require("./order/order.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -28,6 +29,7 @@ exports.AppModule = AppModule = __decorate([
             coupon_module_1.CouponModule,
             stripe_module_1.StripeModule,
             supabase_module_1.SupabaseModule,
+            order_module_1.OrderModule,
         ],
     })
 ], AppModule);

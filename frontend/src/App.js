@@ -12,6 +12,8 @@ import CartPage from './pages/Cart';
 import BrowseProductsPage from './pages/BrowseProducts';
 import CheckoutPage from './pages/CheckOut';
 import ConfirmationPage from './pages/Confirmation';
+import MyOrdersPage from './pages/MyOrders';
+
 
 
 function App() {
@@ -19,9 +21,9 @@ function App() {
   return (
     <>
       <Router>
-   
-          <Navbar />
-        
+
+        <Navbar />
+
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/signup" element={<SignUpPage />} />
@@ -30,11 +32,15 @@ function App() {
           <Route path="/browse-products" element={<BrowseProductsPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/product/edit/:id" element={<EditProductPage />} />
-          <Route path="/your-products" element={<YourProductPage/>} />
-          <Route path="/cart" element={<CartPage/>} />
-          <Route path="/checkout" element={<CheckoutPage/>} />
-          <Route path="/confirmation" element={<ConfirmationPage/>} />
+          <Route path="/your-products" element={<YourProductPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/confirmation" element={<ConfirmationPage />} />
+          <Route path="/my-orders" element={<MyOrdersPage />} />
         </Routes>
+
+
+
       </Router>
     </>
   );

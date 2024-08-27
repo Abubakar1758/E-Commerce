@@ -1,4 +1,3 @@
-// prisma/schema.prisma
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -9,14 +8,16 @@ generator client {
 }
 
 model User {
-  id             Int        @id @default(autoincrement())
+  id             Int                @id @default(autoincrement())
   name           String
-  email          String     @unique
+  email          String             @unique
   displayPicture String?
   role           String
   password       String
   products       Product[]
   comments       Comment[]
+  orders         Order[]
+  resetTokens    PasswordResetToken[] // Added relation to PasswordResetToken
 }
 
 model Product {
@@ -29,6 +30,7 @@ model Product {
   serialNumber   String     @unique
   images         Image[]
   comments       Comment[]
+  orderItems     OrderItem[]
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 }
@@ -55,4 +57,36 @@ model Coupon {
   id                   Int      @id @default(autoincrement())
   code                 String   @unique
   discountPercentage   Float
+}
+
+model Order {
+  id          Int        @id @default(autoincrement())
+  userId      Int
+  user        User       @relation(fields: [userId], references: [id])
+  totalAmount Float
+  coupon      String?
+  createdAt   DateTime   @default(now())
+  orderItems  OrderItem[]
+}
+
+model OrderItem {
+  id          Int      @id @default(autoincrement())
+  itemName    String
+  productId   Int
+  product     Product  @relation(fields: [productId], references: [id])
+  quantity    Int
+  price       Float
+  orderId     Int
+  order       Order    @relation(fields: [orderId], references: [id])
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }

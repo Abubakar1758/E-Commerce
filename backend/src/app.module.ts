@@ -6,6 +6,7 @@ import { ProductModule } from './product/product.module';
 import { CouponModule } from './coupon/coupon.module';
 import { StripeModule } from './stripe/stripe.module';
 import { SupabaseModule } from './supabase/supabase.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SupabaseModule } from './supabase/supabase.module';
     CouponModule,
     StripeModule,
     SupabaseModule,
+    OrderModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

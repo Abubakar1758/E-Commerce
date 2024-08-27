@@ -3,11 +3,12 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 import { loadStripe } from '@stripe/stripe-js';
 import { CartContext } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
-
+import { UserContext } from '../contexts/UserContext';
 const stripePromise = loadStripe('pk_test_51Pqx2N05ECef6IIAtDWJ2fHFQoUHgaQU66spXlTp03jWNbzKmhaMVcx3WpJKfdO1s30wVrzephEZf0EGBMzn8jy900HYBnDDPJ');
 
 const CheckoutForm = () => {
   const { cart, clearCart } = useContext(CartContext); 
+  const { user } = useContext(UserContext);
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
@@ -26,14 +27,14 @@ const CheckoutForm = () => {
     setLoading(true);
 
     try {
-
+      // Create Payment Intent
       const { clientSecret } = await fetch('http://localhost:4000/payment/create-payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: getDiscountedAmount() }),
       }).then(res => res.json());
 
-     
+      // Confirm Card Payment
       const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: elements.getElement(CardElement),
@@ -43,10 +44,36 @@ const CheckoutForm = () => {
       if (stripeError) {
         setError(stripeError.message);
       } else if (paymentIntent.status === 'succeeded') {
-        alert('Payment successful!');
-        clearCart(); 
-        localStorage.removeItem('discountedTotal'); 
-        navigate('/confirmation');
+       
+        const userId = user.id; 
+        const coupon = localStorage.getItem('coupon') || null;
+        const totalAmount = getDiscountedAmount() / 100; // Convert back to dollars
+
+        const orderResponse = await fetch('http://localhost:4000/orders/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            totalAmount,
+            coupon,
+            items: cart.map(item => ({
+              productId: item.product.id,
+              name: item.product.name,
+              quantity: item.quantity,
+              price: item.product.price,
+            })),
+          }),
+        });
+
+        if (orderResponse.ok) {
+          alert('Payment successful and order placed!');
+          clearCart(); 
+          localStorage.removeItem('discountedTotal'); 
+          localStorage.removeItem('coupon');
+          navigate('/confirmation');
+        } else {
+          setError('Failed to save order.');
+        }
       }
     } catch (err) {
       setError('Payment failed.');

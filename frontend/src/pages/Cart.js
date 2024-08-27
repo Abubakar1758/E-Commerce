@@ -28,9 +28,12 @@ const CartPage = () => {
       }
       const data = await response.json();
       setDiscount(data.discountPercentage);
+  
+      localStorage.setItem('coupon', coupon);
     } catch (error) {
       setCouponError(error.message);
       setDiscount(0);
+      localStorage.removeItem('coupon');
     }
   };
 

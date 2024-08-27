@@ -154,6 +154,7 @@ function Navbar() {
                                 Browse Products
                             </button>
                         </li>
+                        
                         {user?.role === 'seller' && (
                             <>
                                 <li className="nav-item mx-2">
@@ -170,14 +171,6 @@ function Navbar() {
                                         onClick={() => navigate('/create-product')}
                                     >
                                         Create Product
-                                    </button>
-                                </li>
-                                <li className="nav-item mx-2">
-                                    <button
-                                        className={`btn btn-link nav-link ${location.pathname === '/orders' ? 'active' : ''}`}
-                                        onClick={() => navigate('/orders')}
-                                    >
-                                        Orders
                                     </button>
                                 </li>
                             </>

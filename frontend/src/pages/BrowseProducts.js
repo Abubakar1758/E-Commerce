@@ -76,7 +76,7 @@ const BrowseProductsPage = () => {
 
       <div className="d-flex justify-content-between align-items-center">
         <button 
-          className="btn btn-primary"
+          className="btn btn-primary mb-5"
           onClick={handlePreviousPage}
           disabled={currentPage === 1}
         >
@@ -84,7 +84,7 @@ const BrowseProductsPage = () => {
         </button>
         <span>Page {currentPage} of {totalPages}</span>
         <button 
-          className="btn btn-primary"
+          className="btn btn-primary mb-5"
           onClick={handleNextPage}
           disabled={currentPage === totalPages}
         >

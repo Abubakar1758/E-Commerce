@@ -1,16 +1,16 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../contexts/UserContext';
 import { ProductContext } from '../contexts/ProductContext';
-
+import { Link } from 'react-router-dom';
 
 function LoginPage() {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
+        rememberMe: false,
     });
-
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
@@ -18,9 +18,27 @@ function LoginPage() {
     const { loginUser } = useContext(UserContext);
     const { fetchProducts } = useContext(ProductContext);
 
+    // Load saved email and password from localStorage if "rememberMe" was checked
+    useEffect(() => {
+        const savedEmail = localStorage.getItem('rememberedEmail');
+        const savedPassword = localStorage.getItem('rememberedPassword');
+
+        if (savedEmail && savedPassword) {
+            setFormData((prevData) => ({
+                ...prevData,
+                email: savedEmail,
+                password: savedPassword,
+                rememberMe: true,
+            }));
+        }
+    }, []);
+
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({ ...prevData, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: type === 'checkbox' ? checked : value,
+        }));
     };
 
     const handleSubmit = async (e) => {
@@ -46,8 +64,17 @@ function LoginPage() {
                 });
 
                 fetchProducts();
-                navigate('/');
 
+                // Save credentials to localStorage if "rememberMe" is checked
+                if (formData.rememberMe) {
+                    localStorage.setItem('rememberedEmail', formData.email);
+                    localStorage.setItem('rememberedPassword', formData.password);
+                } else {
+                    localStorage.removeItem('rememberedEmail');
+                    localStorage.removeItem('rememberedPassword');
+                }
+
+                navigate('/');
             } else {
                 const errorData = await response.json();
                 setError(`Error: ${errorData.message}`);
@@ -71,45 +98,59 @@ function LoginPage() {
                             {success && <div className="alert alert-success">{success}</div>}
                             {error && <div className="alert alert-danger">{error}</div>}
 
-                            <form onSubmit={handleSubmit}>
-                                <div className="form-group mb-4">
-                                    <label htmlFor="email">Email</label>
-                                    <input
-                                        type="email"
-                                        className="form-control"
-                                        id="email"
-                                        name="email"
-                                        placeholder="Enter your email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
+                                <form onSubmit={handleSubmit}>
+                                    <div className="form-group mb-4">
+                                        <label htmlFor="email">Email</label>
+                                        <input
+                                            type="email"
+                                            className="form-control"
+                                            id="email"
+                                            name="email"
+                                            placeholder="Enter your email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </div>
 
-                                <div className="form-group mb-4">
-                                    <label htmlFor="password">Password</label>
-                                    <input
-                                        type="password"
-                                        className="form-control"
-                                        id="password"
-                                        name="password"
-                                        placeholder="Enter your password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
+                                    <div className="form-group mb-4">
+                                        <label htmlFor="password">Password</label>
+                                        <input
+                                            type="password"
+                                            className="form-control"
+                                            id="password"
+                                            name="password"
+                                            placeholder="Enter your password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </div>
 
-                                <button type="submit" className="btn btn-primary btn-block mb-3">
-                                    Log In
-                                </button>
+                                    <div className="form-check mb-4">
+                                        <input
+                                            type="checkbox"
+                                            className="form-check-input"
+                                            id="rememberMe"
+                                            name="rememberMe"
+                                            checked={formData.rememberMe}
+                                            onChange={handleChange}
+                                        />
+                                        <label className="form-check-label" htmlFor="rememberMe">
+                                            Remember Me
+                                        </label>
+                                    </div>
 
-                                <div className="text-center">
+                                    <button type="submit" className="btn btn-primary btn-block mb-3">
+                                        Log In
+                                    </button>
+
+                                    <div className="text-center">
                                     <a href="/forgot-password">Forgot Password?</a>
-                                    <br />
-                                    <a href="/signup">Not a member? Sign Up</a>
-                                </div>
-                            </form>
+                                        <br />
+                                        <Link to="/signup">Not a member? Sign Up                                        </Link>
+                                    </div>
+                                </form>
                         </div>
                     </div>
                 </div>

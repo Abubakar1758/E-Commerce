@@ -26,10 +26,10 @@ export declare class UserController {
         };
     }>;
     getUserById(id: number): Promise<{
-        email: string;
-        role: string;
         id: number;
         name: string;
+        email: string;
         displayPicture: string;
+        role: string;
     }>;
 }
